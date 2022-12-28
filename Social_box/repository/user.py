@@ -42,7 +42,7 @@ def getCurrentUser(db: Session, current_user: schemas.user = Depends(oauth2.get_
     current_userId = db.query(models.User).filter(models.User.email == current_user).first()
     users = db.query(models.User).filter(models.User.id == current_userId.id).first()
     if not users:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with id {id} is not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='User not found')
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {'detail': f'User with id {id} is not found'}
     for i in users.all_post:

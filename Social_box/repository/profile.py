@@ -14,7 +14,7 @@ def getCurrentProfile(db: Session, current_user: schemas.user = Depends(oauth2.g
     profile = db.query(models.Profile).filter(models.Profile.user_id == current_userId.id).first()
     noOfPost = db.query(models.Post).filter(models.Post.user_id == current_userId.id).count()
     if not profile:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Profile with id {current_userId.id} is not found')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Profile not found')
         # response.status_code = status.HTTP_404_NOT_FOUND
         # return {'detail': f'User with id {id} is not found'}
     return [profile, current_userId.first_name, current_userId.last_name, current_userId.email, noOfPost]
