@@ -4,6 +4,7 @@ from fastapi.responses import RedirectResponse
 from Social_box import schemas, database, models, JWTtoken
 from sqlalchemy.orm import Session
 from Social_box.hashing import hashing
+from threading import Timer
 
 router = APIRouter(
     tags=['Authentication']
@@ -20,3 +21,8 @@ def authentication(request: OAuth2PasswordRequestForm = Depends(), db: Session =
 
     access_token = JWTtoken.create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
+
+def server():
+    print("Server is up")
+    timer = Timer(10, server)
+    timer.start()
