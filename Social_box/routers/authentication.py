@@ -22,7 +22,3 @@ def authentication(request: OAuth2PasswordRequestForm = Depends(), db: Session =
     access_token = JWTtoken.create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-def server():
-    print("Server is up")
-    timer = Timer(10, server)
-    timer.start()

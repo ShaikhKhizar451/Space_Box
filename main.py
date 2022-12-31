@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import uvicorn
 from Social_box import models
 from Social_box.database import engine
 from Social_box.routers import post, user, authentication, profile
@@ -22,4 +23,5 @@ app.include_router(user.router)
 app.include_router(post.router)
 app.include_router(profile.router)
 
-authentication.server()
+if __name__ == "main":
+    uvicorn.run(app, port=5000, host="0.0.0.0")
