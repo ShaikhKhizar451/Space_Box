@@ -23,5 +23,5 @@ app.include_router(user.router)
 app.include_router(post.router)
 app.include_router(profile.router)
 
-if __name__ == "main":
+if __name__ == "__main__":
     uvicorn.run(app, port=5000, host="0.0.0.0")
