@@ -10,6 +10,7 @@ router = APIRouter(
     tags=['Authentication']
 )
 
+# route for user login
 @router.post('/authentication')
 def authentication(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     user = db.query(models.User).filter(models.User.email == request.username).first()

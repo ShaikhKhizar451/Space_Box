@@ -5,10 +5,12 @@ from fastapi import HTTPException, status, Depends, File, UploadFile, Form
 import os
 import random
 
+# function to get all profiles from db
 def get(db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     profile = db.query(models.Profile).all()
     return profile
 
+# function to get current profile only
 def getCurrentProfile(db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     current_userId = db.query(models.User).filter(models.User.email == current_user).first()
     profile = db.query(models.Profile).filter(models.Profile.user_id == current_userId.id).first()
@@ -19,6 +21,7 @@ def getCurrentProfile(db: Session, current_user: schemas.user = Depends(oauth2.g
         # return {'detail': f'User with id {id} is not found'}
     return [profile, current_userId.first_name, current_userId.last_name, current_userId.email, noOfPost]
 
+# function to create new profile specific to every user(one user will have only one profile)
 def create(db: Session, bio: str = Form(...), gender: str = Form(...), dob: str = Form(...), location: str = Form(...), file: UploadFile = File(...), current_user: schemas.user = Depends(oauth2.get_current_user)):
     current_userId = db.query(models.User).filter(models.User.email == current_user).first()
     f = open(os.path.realpath(os.curdir) + '/Social_box/temp/' + file.filename + '.' + (file.content_type.split('/')[1]), 'wb')
@@ -34,6 +37,7 @@ def create(db: Session, bio: str = Form(...), gender: str = Form(...), dob: str 
     os.remove(os.path.realpath(os.curdir) + '/Social_box/temp/' + file.filename + '.' + (file.content_type.split('/')[1]))
     return "Profile Created Successfully"
 
+# function to update current user details
 def update(user_id: int, media_id: int, db: Session, bio: str = Form(...), gender: str = Form(...), location: str = Form(...), first_name: str = Form(...), last_name: str = Form(...), file: UploadFile = File(...)):
     profile = db.query(models.Profile).filter(models.Profile.user_id == user_id)
     user = db.query(models.User).filter(models.User.id == user_id)
@@ -57,6 +61,7 @@ def update(user_id: int, media_id: int, db: Session, bio: str = Form(...), gende
         os.path.realpath(os.curdir) + '/Social_box/temp/' + file.filename + '.' + (file.content_type.split('/')[1]))
     return "Updated Successfully"
 
+# function to delete user with id
 def delete(id:int, db: Session):
     profile = db.query(models.Profile).filter(models.Profile.profile_id == id).delete()
     db.commit()
@@ -64,6 +69,7 @@ def delete(id:int, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Profile with id {id} Not found')
     return "User Deleted Successfully"
 
+# function to follow user (if current user already followed the respective user it will remove the entry from db or else it will add)
 def follow(id: str, db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     curr_user = db.query(models.User).filter(models.User.email == current_user).first()
     follow_filter = db.query(models.Followers).filter(models.Followers.user == id, models.Followers.follower == curr_user.id).first()
@@ -90,6 +96,7 @@ def follow(id: str, db: Session, current_user: schemas.user = Depends(oauth2.get
         db.commit()
         return "unfollow"
 
+# function to get suggested user (this will return the random users which is not followed by current user)
 def suggestionUser(db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     curr_user = db.query(models.User).filter(models.User.email == current_user).first()
     following = db.query(models.Followers).filter(models.Followers.follower == curr_user.id).values(models.Followers.user)

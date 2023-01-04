@@ -3,6 +3,7 @@ from Social_box import models, schemas, oauth2
 from fastapi import HTTPException, status, Depends
 from Social_box.hashing import hashing
 
+# view user's all detail with id
 def getUserWithId(id, db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     users = db.query(models.User).filter(models.User.id == id).first()
     profile = db.query(models.Profile).filter(models.Profile.user_id == id).first()
@@ -38,6 +39,7 @@ def getUserWithId(id, db: Session, current_user: schemas.user = Depends(oauth2.g
     users.following = profile.following
     return users
 
+# get detail for current user with all post for current user
 def getCurrentUser(db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     current_userId = db.query(models.User).filter(models.User.email == current_user).first()
     users = db.query(models.User).filter(models.User.id == current_userId.id).first()
@@ -59,6 +61,7 @@ def getCurrentUser(db: Session, current_user: schemas.user = Depends(oauth2.get_
         i.liked = liked
     return users
 
+# route for creating user
 def create(request: schemas.user, db: Session):
     new_user = models.User(first_name=request.first_name, last_name=request.last_name, email=request.email, password=hashing.bcrypt(request.password))  # **request.dict() for insert all field at a time
     db.add(new_user)
@@ -66,6 +69,7 @@ def create(request: schemas.user, db: Session):
     db.refresh(new_user)
     return new_user
 
+# route for updating the user detail
 def update(id: int, request: schemas.user, db: Session):
     users = db.query(models.User).filter(models.User.id == id)
     if not users.first():
@@ -74,6 +78,7 @@ def update(id: int, request: schemas.user, db: Session):
     db.commit()
     return "Updated Successfully"
 
+# route to delete the user with id
 def delete(id:int, db: Session):
     user = db.query(models.User).filter(models.User.id == id).delete()
     db.commit()

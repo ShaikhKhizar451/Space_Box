@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 
 
-# user related
+# user Detail
 class user(BaseModel):
     first_name: str
     last_name: str

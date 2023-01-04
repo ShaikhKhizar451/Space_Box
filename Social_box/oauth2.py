@@ -4,6 +4,7 @@ from Social_box import JWTtoken
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="authentication")
 
+# To validate the token of current user
 def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,

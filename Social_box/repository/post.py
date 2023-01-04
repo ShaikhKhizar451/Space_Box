@@ -9,6 +9,7 @@ from threading import Timer
 image = ['jpg', 'jpeg', 'png', 'gif']
 video = ['mp4', 'WebM', 'OGG', 'mkv']
 
+# function to create post (This post will be saved in cloud and accept only video and image format)
 def create(db: Session, caption: str = Form(...), likes: str = Form(...), created_on: str = Form(...), file: UploadFile = File(...), current_user: schemas.user = Depends(oauth2.get_current_user)):
     userid = db.query(models.User).filter(models.User.email == current_user).first()
     f = open(os.path.realpath(os.curdir)+'/Social_box/temp/'+file.filename+'.'+(file.content_type.split('/')[1]), 'wb')
@@ -29,6 +30,7 @@ def create(db: Session, caption: str = Form(...), likes: str = Form(...), create
     os.remove(os.path.realpath(os.curdir) + '/Social_box/temp/' + file.filename + '.' + (file.content_type.split('/')[1]))
     return "Post Created Successfully"
 
+# function to get all post with pagination to reduce the time to load data at front end and also to reduce cellular data
 def get(page_start: int, page_end: int, db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     posts = db.query(models.Post).all()
     for i in posts:
@@ -68,6 +70,7 @@ def get(page_start: int, page_end: int, db: Session, current_user: schemas.user 
         response["pagination"]["next"] = f"/getAllPost?page_start={page_start+1}&page_end={page_end}"
     return response
 
+# function to get post by id
 def getById(id: str, db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:
@@ -88,6 +91,7 @@ def getById(id: str, db: Session, current_user: schemas.user = Depends(oauth2.ge
     post.user_id = user.id
     return post
 
+# function to delete post by id
 def delete(id: str, db: Session):
     driveDB.delete_file(id)
     post = db.query(models.Post).filter(models.Post.id == id).delete()
@@ -96,11 +100,13 @@ def delete(id: str, db: Session):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'Post with id {id} Not found')
     return "Post Deleted Successfully"
 
+# function to update the post caption by id in db
 def update(id: str, request: str, db: Session):
     post = db.query(models.Post).filter(models.Post.id == id).update({"caption": request})
     db.commit()
     return "Updated Successfully"
 
+# function to like the post by id (if user already liked the post it will remove entry from db or else it will be added)
 def likePost(id: str, db: Session, current_user: schemas.user = Depends(oauth2.get_current_user)):
     like_filter = db.query(models.PostLikes).filter(models.PostLikes.post_id == id, models.PostLikes.email == current_user).first()
     if not like_filter:

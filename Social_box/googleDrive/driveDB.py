@@ -11,6 +11,7 @@ serv = main.create_service()
 image = ['jpg', 'jpeg', 'png', 'gif']
 video = ['mp4', 'WebM', 'OGG', 'mkv']
 
+# This function will upload the file to drive from temp storage and return its id
 def upload_file(filename, coreFile, content_type):
     if content_type.split('/')[1] in image:
         parent = '17K8h8B0uwHYEG6nkB_dPFTOZWIa_9mNN'
@@ -28,7 +29,6 @@ def upload_file(filename, coreFile, content_type):
 
         media = MediaFileUpload(coreFile, mimetype=content_type)
         file = serv.files().create(body=file_metadata, media_body=media, fields='id').execute()
-        print(F'File ID: {file.get("id")}')
         change_role_of_files(file.get("id"))
     except HttpError as error:
         print(f'An error occured: {error}')
@@ -36,7 +36,7 @@ def upload_file(filename, coreFile, content_type):
 
     return file.get("id")
 
-
+# This function will change the role of file to public so that we can see post using the links
 def change_role_of_files(fileid):
     try:
         file_id = fileid
@@ -45,7 +45,7 @@ def change_role_of_files(fileid):
     except HttpError as error:
         print(f'An error occured: {error}')
 
-
+#  This function will return all file present in drive
 def get_all_files():
     try:
         results = serv.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
@@ -60,7 +60,7 @@ def get_all_files():
         print(f'An error occured: {error}')
         return f'An error occurred: {error}'
 
-
+# This function will return specific file with id present in drive
 def get_file_with_id(file_id):
     try:
         results = serv.files().get(fileId=file_id, fields='webContentLink').execute()
@@ -69,6 +69,7 @@ def get_file_with_id(file_id):
         print(f'An error occured: {error}')
         return f'An error occurred: {error}'
 
+# This function will return thumbnail of file with its id
 def get_file_thumbnail_with_id(file_id):
     try:
         results = serv.files().get(fileId=file_id, fields='thumbnailLink').execute()
@@ -77,7 +78,7 @@ def get_file_thumbnail_with_id(file_id):
         print(f'An error occured: {error}')
         return f'An error occurred: {error}'
 
-
+# This function will delete the file with its id
 def delete_file(file_id):
     try:
         file = serv.files().delete(fileId=file_id).execute()
@@ -88,6 +89,7 @@ def delete_file(file_id):
         return f'An error occurred: {error}'
 
 
+# This function will update the file metadata using its id (This will not change the ID of file)
 def update_file(file_id, coreFile, content_type):
     try:
         media = MediaFileUpload(coreFile, mimetype=content_type)
@@ -98,8 +100,8 @@ def update_file(file_id, coreFile, content_type):
         file = None
         return f'An error occurred: {error}'
 
-# Advance feature to be implemented after words
-
+# Advance feature
+# This function will download the file using its id
 def downloadFile(real_file_id):
     filename=serv.files().get(fileId=real_file_id).execute()['name']
     request = serv.files().get_media(fileId=real_file_id)
@@ -113,17 +115,3 @@ def downloadFile(real_file_id):
     with open(os.path.join('./', filename),'wb') as f:
         f.write(file.read())
         f.close()
-
-# very import for viewing the files https://drive.google.com/uc?export=view&id=[file_id]
-
-
-if __name__ == '__main__':
-    pass
-    # get_all_files()
-    # get_file_with_id('1fkArDScCp50vb5YR0ijbXKyqIBjzt1cY')
-    # upload_file()
-    # change_role_of_files('1fkArDScCp50vb5YR0ijbXKyqIBjzt1cY')
-    # update_file('1992dvQon99AZgOB9Qt-SgJkENcXlWtGk')
-    # delete_file('1992dvQon99AZgOB9Qt-SgJkENcXlWtGk')
-    # downloadFile('1bk9w0JZCOEMoTRZYmHysn675AOISEP_J')
-
