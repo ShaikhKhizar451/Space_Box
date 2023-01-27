@@ -9,6 +9,7 @@ class user(BaseModel):
     email: str
     password: str
 
+
 # Post Related
 class showPost(BaseModel):
     id: str
@@ -26,6 +27,7 @@ class showPost(BaseModel):
 
     class Config:
         orm_mode = True
+
 
 class showPostimg(BaseModel):
     caption: str
@@ -47,6 +49,7 @@ class showUsers(BaseModel):
     class Config:
         orm_mode = True
 
+
 class showParticularUser(BaseModel):
     id: int
     first_name: str
@@ -64,6 +67,7 @@ class showParticularUser(BaseModel):
     class Config:
         orm_mode = True
 
+
 # Profile Related
 class Profile(BaseModel):
     user_id: int
@@ -79,6 +83,7 @@ class Profile(BaseModel):
     class Config:
         orm_mode = True
 
+
 class ProfileUpdate(BaseModel):
     bio: str
     # profile_pic: str
@@ -90,10 +95,12 @@ class ProfileUpdate(BaseModel):
     class Config:
         orm_mode = True
 
+
 #  TOKEN RELATED
 class Login(BaseModel):
     username: str
     password: str
+
 
 class Token(BaseModel):
     access_token: str
