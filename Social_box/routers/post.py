@@ -49,7 +49,7 @@ def deletePost(
     id: str,
     db: Session = Depends(database.get_db),
     current_user: schemas.user = Depends(oauth2.get_current_user),
-):
+): 
     return post.delete(id, db)
 
 
